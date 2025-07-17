@@ -1,3 +1,6 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 // Type checkers
 export const isArray = (value: unknown): value is unknown[] =>
   Array.isArray(value);
@@ -33,3 +36,7 @@ export const isEmpty = (
     false
   );
 };
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}

@@ -1,10 +1,6 @@
 const REACT_QUERY_CACHE_KEYS = {
-  getPopularMovies: "getPopularMovies",
-  getMoviesGenres: "getMoviesGenres",
-  getMovieDetail: "getMovieDetail",
   getMoviesByFilter: "getMoviesByFilter",
-  getMovieReviews: "getMovieReviews",
-  getMovieCast: "getMovieCast",
+  getMoviesBySearch: "getMoviesBySearch",
 };
 
 export default REACT_QUERY_CACHE_KEYS;

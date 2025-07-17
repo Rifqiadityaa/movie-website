@@ -1,96 +1,99 @@
-import MovieCard from "@components/MovieCard";
-import useGetMoviesByFilters from "@hooks/useGetMoviesByFilter";
-import useInfiniteScroll from "@hooks/useInfiniteScroll";
-import { isEmpty } from "@utils/index";
-import { Fragment, useEffect, type ReactNode } from "react";
+import { Input } from "@components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@components/ui/select";
+import useDebounce from "@hooks/useDebounce";
+import type { DiscoverMovieRequest } from "@lib/services/tmdb-api/v3.0";
+import { addMonths } from "date-fns";
+import { useState, type ReactNode } from "react";
+import FilteredResults from "./FilteredResults";
+import SearchResults from "./SearchResults";
+
+interface IDiscoverMovieParams {
+  nowPlaying: DiscoverMovieRequest;
+  popular: DiscoverMovieRequest;
+  topRated: DiscoverMovieRequest;
+  upcoming: DiscoverMovieRequest;
+}
+
+const discoverMovieParams: IDiscoverMovieParams = {
+  nowPlaying: {
+    includeVideo: false,
+    language: "en-US",
+    sortBy: "popularity.desc",
+    withReleaseType: 2 | 3,
+    releaseDateGte: new Date(),
+    releaseDateLte: addMonths(new Date(), 1),
+  },
+  popular: {
+    includeVideo: false,
+    language: "en-US",
+    sortBy: "popularity.desc",
+  },
+  topRated: {
+    includeVideo: false,
+    language: "en-US",
+    sortBy: "vote_average.desc",
+    withoutGenres: "99,10755",
+    voteCountGte: 200,
+  },
+  upcoming: {
+    includeVideo: false,
+    language: "en-US",
+    sortBy: "popularity.desc",
+    withReleaseType: 2 | 3,
+    region: "US",
+    releaseDateGte: addMonths(new Date(), 1),
+    releaseDateLte: addMonths(new Date(), 2),
+  },
+};
 
 const MoviesPage = (): ReactNode => {
-  const {
-    data,
-    isLoading,
-    isError,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useGetMoviesByFilters();
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filter, setFilter] =
+    useState<keyof IDiscoverMovieParams>("nowPlaying");
 
-  const { lastElementRef, cleanup } = useInfiniteScroll({
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-    isLoading,
-    threshold: 0.8,
-  });
-
-  useEffect(() => {
-    return () => {
-      cleanup();
-    };
-  }, [cleanup]);
-
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4">
-        {[...Array(10)].map((_, index) => (
-          <div
-            key={index}
-            className="bg-gray-700 aspect-[3/4] rounded-lg animate-pulse"
-          ></div>
-        ))}
-      </div>
-    );
-  }
-
-  if (!data || isEmpty(data.pages)) {
-    return (
-      <div className="text-center text-gray-500 text-lg font-semibold">
-        No movies found.
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="text-center text-red-500 text-lg font-semibold">
-        Failed to load movies. Please try again later.
-      </div>
-    );
-  }
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const isSearchMode = debouncedSearchQuery.length > 0;
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4">
-      {data.pages.map((group, i) => (
-        <Fragment key={i}>
-          {group.results?.map((movie, j) => {
-            const isLastMovie =
-              i === data.pages.length - 1 &&
-              j === (group.results?.length || 0) - 1;
+    <div className="p-4">
+      <div className="grid grid-cols-6 gap-2 mb-5 sm:mb-0">
+        <Input
+          className="text-black mb-0 sm:mb-5 col-span-6 sm:col-span-4 lg:col-span-5"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search for movies..."
+        />
+        <Select
+          value={filter}
+          onValueChange={(value) =>
+            setFilter(value as keyof IDiscoverMovieParams)
+          }
+        >
+          <SelectTrigger className="w-full col-span-6 sm:col-span-2 lg:col-span-1 text-black">
+            <SelectValue placeholder="Filter" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="nowPlaying">Now Playing</SelectItem>
+            <SelectItem value="popular">Popular</SelectItem>
+            <SelectItem value="topRated">Top Rated</SelectItem>
+            <SelectItem value="upcoming">Upcoming</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-            return (
-              <div key={movie.id} ref={isLastMovie ? lastElementRef : null}>
-                <MovieCard
-                  title={movie.original_title || "Untitled"}
-                  releaseDate={movie.release_date || "Unknown Release Date"}
-                  posterPath={movie.poster_path || ""}
-                />
-              </div>
-            );
-          })}
-        </Fragment>
-      ))}
-
-      {/* Loading indicator for next page */}
-      {isFetchingNextPage && (
-        <div className="col-span-full text-center py-4">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        </div>
-      )}
-
-      {/* End of results indicator */}
-      {!hasNextPage && data.pages.length > 0 && (
-        <div className="col-span-full text-center py-4 text-gray-500">
-          No more movies to load
-        </div>
+      {isSearchMode ? (
+        <SearchResults searchQuery={debouncedSearchQuery} />
+      ) : (
+        <FilteredResults
+          enabled={!isSearchMode}
+          params={discoverMovieParams[filter]}
+        />
       )}
     </div>
   );

@@ -9,7 +9,7 @@ interface MovieCardProps {
 
 const MovieCard: FC<MovieCardProps> = ({ title, releaseDate, posterPath }) => {
   return (
-    <div className="bg-gray-800 rounded-lg shadow-md relative group overflow-hidden transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl animate-fadeIn">
+    <div className="bg-gray-800 rounded-lg shadow-md relative group overflow-hidden transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl animate-fadeIn h-full hover:cursor-pointer">
       <img
         src={`${TMDB_IMG_BASE_URL}${TMDB_IMG_RES.poster.w500}${posterPath}`}
         alt={title}

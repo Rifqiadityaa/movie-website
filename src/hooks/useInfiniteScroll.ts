@@ -1,61 +1,42 @@
 import { useCallback, useRef } from "react";
 
+type TlastElementRef = (element: HTMLElement | null) => void;
+
 interface UseInfiniteScrollProps {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   fetchNextPage: () => void;
-  isLoading?: boolean;
-  rootMargin?: string;
-  threshold?: number;
 }
 
 const useInfiniteScroll = ({
   hasNextPage,
   isFetchingNextPage,
   fetchNextPage,
-  isLoading = false,
-  threshold = 1.0,
-}: UseInfiniteScrollProps): {
-  lastElementRef: (element: HTMLElement | null) => void;
-  cleanup: () => void;
-} => {
+}: UseInfiniteScrollProps): TlastElementRef => {
   const observer = useRef<IntersectionObserver | null>(null);
 
   const lastElementRef = useCallback(
     (element: HTMLElement | null) => {
-      // Don't observe while loading or if there's no element
-      if (isLoading || !element) return;
+      // Don't observe while loading or fetching or if there's no element
+      if (isFetchingNextPage) return;
 
       // Disconnect previous observer
       if (observer.current) observer.current.disconnect();
 
       // Create new observer
-      observer.current = new IntersectionObserver(
-        (entries) => {
-          const [entry] = entries;
-          if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
-          }
-        },
-        {
-          threshold,
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
         }
-      );
+      });
 
       // Start observing the new element
-      observer.current.observe(element);
+      if (element) observer.current.observe(element);
     },
-    [hasNextPage, isFetchingNextPage, fetchNextPage, isLoading, threshold]
+    [hasNextPage, isFetchingNextPage, fetchNextPage]
   );
 
-  // Cleanup function to disconnect observer
-  const cleanup = useCallback(() => {
-    if (observer.current) {
-      observer.current.disconnect();
-    }
-  }, []);
-
-  return { lastElementRef, cleanup };
+  return lastElementRef;
 };
 
 export default useInfiniteScroll;

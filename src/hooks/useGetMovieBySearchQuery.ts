@@ -1,9 +1,9 @@
 import REACT_QUERY_CACHE_KEYS from "@constants/cacheKey";
 import { apiClient } from "@lib/services/tmdb-api";
 import type {
-  DiscoverMovie200Response,
-  DiscoverMovieRequest,
   ResponseError,
+  SearchMovie200Response,
+  SearchMovieRequest,
 } from "@lib/services/tmdb-api/v3.0";
 import type {
   InfiniteData,
@@ -11,20 +11,20 @@ import type {
 } from "@tanstack/react-query";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
-const fetchMoviesByFilter = (params?: DiscoverMovieRequest) =>
-  apiClient().discoverMovie({
+const fetchMoviesBySearchQuery = (params: SearchMovieRequest) =>
+  apiClient().searchMovie({
     ...params,
     includeAdult: false,
   });
 
-const useGetMoviesByFilters = (
-  params?: DiscoverMovieRequest,
+const useGetMoviesBySearchQuery = (
+  params: SearchMovieRequest,
   options?: Omit<
     UseInfiniteQueryOptions<
-      DiscoverMovie200Response,
+      SearchMovie200Response,
       ResponseError,
-      InfiniteData<DiscoverMovie200Response>,
-      [string, DiscoverMovieRequest | undefined],
+      InfiniteData<SearchMovie200Response>,
+      [string, SearchMovieRequest],
       number
     >,
     "queryKey" | "queryFn" | "initialPageParam" | "getNextPageParam"
@@ -33,7 +33,7 @@ const useGetMoviesByFilters = (
   return useInfiniteQuery({
     queryKey: [REACT_QUERY_CACHE_KEYS.getMoviesByFilter, params],
     queryFn: ({ pageParam }) =>
-      fetchMoviesByFilter({ ...params, page: pageParam }),
+      fetchMoviesBySearchQuery({ ...params, page: pageParam }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (!lastPage?.page || !lastPage?.total_pages) {
@@ -48,4 +48,4 @@ const useGetMoviesByFilters = (
   });
 };
 
-export default useGetMoviesByFilters;
+export default useGetMoviesBySearchQuery;
