@@ -7,7 +7,7 @@ import {
 const getConfigAPI = (defaultConfig: ConfigurationParameters) => {
   return new Configuration({
     ...defaultConfig,
-    apiKey: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+    apiKey: `Bearer ${import.meta.env.VITE_TMDB_API_KEY}`,
   });
 };
 
