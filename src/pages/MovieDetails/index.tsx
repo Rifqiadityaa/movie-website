@@ -1,7 +1,9 @@
 "use client";
 
 import useGetMovieDetails from "@hooks/useGetMovieDetail";
+import { useEffect } from "react";
 import { useParams } from "react-router";
+import Actors from "./Actors";
 import Hero from "./Hero";
 
 const MovieDetailsPage = () => {
@@ -11,15 +13,14 @@ const MovieDetailsPage = () => {
     movieId: Number(id),
   });
 
-  console.log(data);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <div className="space-y-14">
+    <div className="pb-10 space-y-10 md:space-y-0">
       <Hero movieDetails={data ?? {}} />
-      {/* <div className="px-9 pb-28 md:px-28 lg:px-40 space-y-14">
-          <Cast />
-          <Reviews />
-        </div> */}
+      <Actors movieId={Number(id)} />
     </div>
   );
 };

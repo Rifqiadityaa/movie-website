@@ -64,7 +64,7 @@ const MoviesPage = (): ReactNode => {
     <div className="p-4">
       <div className="grid grid-cols-6 gap-2 mb-5 sm:mb-0">
         <Input
-          className="text-black mb-0 sm:mb-5 col-span-6 sm:col-span-4 lg:col-span-5"
+          className="mb-0 sm:mb-5 col-span-6 sm:col-span-4 lg:col-span-5 border-black-shades-30"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search for movies..."
@@ -75,7 +75,7 @@ const MoviesPage = (): ReactNode => {
             setFilter(value as keyof IDiscoverMovieParams)
           }
         >
-          <SelectTrigger className="w-full col-span-6 sm:col-span-2 lg:col-span-1 text-black">
+          <SelectTrigger className="w-full col-span-6 sm:col-span-2 lg:col-span-1 border-black-shades-30">
             <SelectValue placeholder="Filter" />
           </SelectTrigger>
           <SelectContent>

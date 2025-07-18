@@ -1,6 +1,6 @@
-import MovieList from "@components/MovieList";
 import useGetMoviesBySearchQuery from "@hooks/useGetMovieBySearchQuery";
 import type { ReactNode } from "react";
+import MovieList from "../MovieList";
 
 interface SearchResultsProps {
   searchQuery: string;
@@ -24,6 +24,7 @@ const SearchResults = ({ searchQuery }: SearchResultsProps): ReactNode => {
       fetchNextPage={fetchNextPage}
       isFetchingNextPage={isFetchingNextPage}
       isLoading={isFetching}
+      isSearchMode={true}
     />
   );
 };

@@ -12,8 +12,6 @@ const MovieOverview: FC<IMovieOverview> = ({ movieDetails }) => {
     //because avg rating from the api is out of 10, we divide it by 2 to get the scale of 5, then round it to the nearest bottom 0.5
     const formattedRating = parseFloat((Math.floor(rating) / 2).toFixed(1));
 
-    console.log("formattedRating", formattedRating);
-
     return Array.from({ length: 5 }).map((_, i) => {
       if (formattedRating >= i + 1) {
         return <Star key={i} fill="currentColor" />;

@@ -29,6 +29,7 @@ interface MovieListProps {
   isFetchingNextPage: boolean;
   isLoading: boolean;
   onMouseEnter?: MouseEnterWithMovieArg;
+  isSearchMode?: boolean;
 }
 
 const MovieList: FC<MovieListProps> = ({
@@ -38,6 +39,7 @@ const MovieList: FC<MovieListProps> = ({
   isFetchingNextPage,
   isLoading,
   onMouseEnter,
+  isSearchMode = false,
 }): ReactNode => {
   const navigate = useNavigate();
 
@@ -84,16 +86,25 @@ const MovieList: FC<MovieListProps> = ({
       {/* Loading indicator for next page */}
       {isFetchingNextPage && (
         <div className="col-span-full text-center py-4">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
+        </div>
+      )}
+
+      {/* No results found indicator */}
+      {isSearchMode && data.pages[0].results?.length === 0 && (
+        <div className="col-span-full text-center py-4 text-gray-500">
+          No results found for your search.
         </div>
       )}
 
       {/* End of results indicator */}
-      {!hasNextPage && data.pages.length > 0 && (
-        <div className="col-span-full text-center py-4 text-gray-500">
-          No more movies to load
-        </div>
-      )}
+      {!hasNextPage &&
+        data.pages.length > 0 &&
+        data.pages[0].results?.length !== 0 && (
+          <div className="col-span-full text-center py-4 text-gray-500">
+            No more movies to load.
+          </div>
+        )}
     </div>
   );
 };
