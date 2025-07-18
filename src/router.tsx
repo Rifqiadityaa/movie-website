@@ -1,6 +1,8 @@
+import MovieDetailLayout from "@layouts/MovieDetailLayout";
+import MoviesLayout from "@layouts/MoviesLayout";
+import MovieDetailsPage from "@pages/MovieDetails";
+import MoviesPage from "@pages/Movies";
 import { createBrowserRouter, Navigate } from "react-router";
-import PageContainer from "./layouts/PageContainer";
-import MoviesPage from "./pages/Movies";
 
 const router = createBrowserRouter([
   {
@@ -8,8 +10,17 @@ const router = createBrowserRouter([
     element: <Navigate to="/movies" replace />,
   },
   {
-    element: <PageContainer />,
+    element: <MoviesLayout />,
     children: [{ path: "/movies", element: <MoviesPage /> }],
+  },
+  {
+    element: <MovieDetailLayout />,
+    children: [
+      {
+        path: "/movies/:id",
+        element: <MovieDetailsPage />,
+      },
+    ],
   },
 ]);
 

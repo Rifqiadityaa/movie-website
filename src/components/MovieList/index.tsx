@@ -3,29 +3,44 @@ import MovieCard from "@components/MovieCard";
 import useInfiniteScroll from "@hooks/useInfiniteScroll";
 import type {
   DiscoverMovie200Response,
+  DiscoverMovie200ResponseResultsInner,
   SearchMovie200Response,
+  SearchMovie200ResponseResultsInner,
 } from "@lib/services/tmdb-api/v3.0";
 import type { InfiniteData } from "@tanstack/react-query";
 import { isEmpty } from "@utils/index";
-import { Fragment, type ReactNode } from "react";
+import { Fragment, type FC, type ReactNode } from "react";
+import { useNavigate } from "react-router";
+
+type TMovieListData =
+  | InfiniteData<DiscoverMovie200Response | SearchMovie200Response>
+  | undefined;
+
+export type MouseEnterWithMovieArg = (
+  movie:
+    | DiscoverMovie200ResponseResultsInner
+    | SearchMovie200ResponseResultsInner
+) => void;
 
 interface MovieListProps {
-  data:
-    | InfiniteData<DiscoverMovie200Response | SearchMovie200Response>
-    | undefined;
+  data: TMovieListData;
   hasNextPage: boolean;
   fetchNextPage: () => void;
   isFetchingNextPage: boolean;
   isLoading: boolean;
+  onMouseEnter?: MouseEnterWithMovieArg;
 }
 
-const MovieList = ({
+const MovieList: FC<MovieListProps> = ({
   data,
   hasNextPage,
   fetchNextPage,
   isFetchingNextPage,
   isLoading,
-}: MovieListProps): ReactNode => {
+  onMouseEnter,
+}): ReactNode => {
+  const navigate = useNavigate();
+
   const lastElementRef = useInfiniteScroll({
     hasNextPage,
     isFetchingNextPage,
@@ -50,6 +65,8 @@ const MovieList = ({
             return (
               <div key={movie.id} ref={isLastMovie ? lastElementRef : null}>
                 <MovieCard
+                  onClick={() => navigate(`/movies/${movie.id}`)}
+                  onMouseEnter={() => onMouseEnter && onMouseEnter(movie)}
                   title={movie.original_title || "Untitled"}
                   releaseDate={
                     new Date(movie.release_date || "")

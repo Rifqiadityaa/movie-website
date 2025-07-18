@@ -57,7 +57,7 @@ const MoviesPage = (): ReactNode => {
   const [filter, setFilter] =
     useState<keyof IDiscoverMovieParams>("nowPlaying");
 
-  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const debouncedSearchQuery = useDebounce<string>(searchQuery, 500);
   const isSearchMode = debouncedSearchQuery.length > 0;
 
   return (

@@ -30,7 +30,9 @@
       "@lib/*": ["lib/*"],
       "@constants/*": ["constants/*"],
       "@hooks/*": ["hooks/*"],
-      "@utils/*": ["utils/*"]
+      "@pages/*": ["pages/*"],
+      "@utils/*": ["utils/*"],
+      "@layouts/*": ["layouts/*"]
     }
   },
   "include": ["src"]

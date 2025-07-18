@@ -11,7 +11,9 @@
       "@lib/*": ["lib/*"],
       "@constants/*": ["constants/*"],
       "@hooks/*": ["hooks/*"],
-      "@utils/*": ["utils/*"]
+      "@utils/*": ["utils/*"],
+      "@pages/*": ["pages/*"],
+      "@layouts/*": ["layouts/*"]
     }
   }
 }

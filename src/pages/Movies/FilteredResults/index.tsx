@@ -1,6 +1,10 @@
-import MovieList from "@components/MovieList";
+import MovieList, { type MouseEnterWithMovieArg } from "@components/MovieList";
+import REACT_QUERY_CACHE_KEYS from "@constants/cacheKey";
+import { fetchMovieDetails } from "@hooks/useGetMovieDetail";
 import useGetMoviesByFilters from "@hooks/useGetMoviesByFilter";
+import usePrefetchQuery from "@hooks/usePrefetchQuery";
 import type { DiscoverMovieRequest } from "@lib/services/tmdb-api/v3.0";
+import { isEmpty } from "@utils/index";
 import type { ReactNode } from "react";
 
 interface FilteredResultsProps {
@@ -17,6 +21,23 @@ const FilteredResults = ({
       enabled,
     });
 
+  const { prefetch } = usePrefetchQuery();
+
+  const onMouseEnter: MouseEnterWithMovieArg = (movie) => {
+    if (isEmpty(movie.id)) return;
+
+    const movieId = movie.id;
+
+    prefetch({
+      queryKey: [REACT_QUERY_CACHE_KEYS.getMovieDetails, movieId],
+      queryFn: () =>
+        fetchMovieDetails({
+          movieId,
+        }),
+      staleTime: 1000 * 60 * 60 * 24, // 24 hours
+    });
+  };
+
   return (
     <MovieList
       data={data}
@@ -24,6 +45,7 @@ const FilteredResults = ({
       fetchNextPage={fetchNextPage}
       isFetchingNextPage={isFetchingNextPage}
       isLoading={isFetching}
+      onMouseEnter={onMouseEnter}
     />
   );
 };
